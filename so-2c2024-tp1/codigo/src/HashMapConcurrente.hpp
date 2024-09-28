@@ -26,8 +26,10 @@ class HashMapConcurrente {
 
  private:
     ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
-
+    
     static unsigned int hashIndex(std::string clave);
+
+    std::mutex mutex_tabla[HashMapConcurrente::cantLetras];
 };
 
 #endif  /* HMC_HPP */
