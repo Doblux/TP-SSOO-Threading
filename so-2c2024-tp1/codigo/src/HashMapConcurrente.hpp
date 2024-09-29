@@ -9,6 +9,7 @@
 
 #include "ListaAtomica.hpp"
 
+
 typedef std::pair<std::string, unsigned int> hashMapPair;
 
 class HashMapConcurrente {
@@ -22,7 +23,8 @@ class HashMapConcurrente {
     unsigned int valor(std::string clave);
 
     float promedio();
-
+    
+    std::pair<std::string, unsigned int> promedioParalelo(unsigned int cantThreads);
 
  private:
     ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
@@ -30,6 +32,8 @@ class HashMapConcurrente {
     static unsigned int hashIndex(std::string clave);
 
     std::mutex mutex_tabla[HashMapConcurrente::cantLetras];
+    
+    void promedio_tuneado(int& nro_thread, float& sum, unsigned int& count, unsigned int nro_tabla, unsigned int& cantThreads);
 };
 
 #endif  /* HMC_HPP */

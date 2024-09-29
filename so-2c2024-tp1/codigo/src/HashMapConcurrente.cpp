@@ -8,6 +8,8 @@
 #include "HashMapConcurrente.hpp"
 
 #include <mutex>
+#include <vector>
+#include <thread>
 
 HashMapConcurrente::HashMapConcurrente() {
     for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
@@ -117,5 +119,56 @@ float HashMapConcurrente::promedio() {
 }
 
 
+void HashMapConcurrente::promedio_tuneado(int& nro_thread, float& sum, unsigned int& count, unsigned int nro_tabla, unsigned int& cantThreads){
+    while (nro_tabla < cantLetras){
+        if (tabla[nro_tabla] == nullptr || tabla[nro_tabla]->longitud() == 0) // si es null o si tiene 0 elementos vamos a mirar la siguiente tabla
+        {
+            nro_tabla++;
+        } else {
+
+            std::lock_guard<std::mutex> lock(mutex_tabla[nro_tabla]);
+            // lock_guard se encarga de hacer signal en el destructor, en este caso cuando se deja de utilizar el bucket correspondiente
+
+            unsigned int lista_size = tabla[nro_tabla]->longitud();
+            if (nro_thread < lista_size) // si esta en rango hacemos el promedio, sino ajustamos los indices en el siguiente bucket
+            {
+                sum += (*tabla[nro_tabla])[nro_thread].second;
+                count++;
+                nro_thread += cantThreads;
+            } else { // si me pasé de indice
+                nro_thread = nro_thread - lista_size + 1; // calculo cuanto me pase de largo (el +1 por la longitud (lista_size), cualquier cosa probar sin el +1)
+                nro_tabla++; // me cambio de lista o "bucket"
+            }
+        }
+    }
+}
+
+
+std::pair<std::string, unsigned int> HashMapConcurrente::promedioParalelo(unsigned int cantThreads){
+    float sum = 0.0;
+    unsigned int count = 0;
+    unsigned int nro_tabla = 0;
+    std::vector<std::thread> threads;
+    for (unsigned int i = 0; i < cantThreads; i++)
+    {
+        threads.emplace_back( 
+            /*Uso de std::ref: 
+            Esto permite que std::thread sepa que estás pasando referencias a las variables. 
+            Sin std::ref, el hilo intentaría copiar las variables, lo que llevaría a errores de tipo porque no coinciden con la firma de promedio_tuneado
+            */
+            promedio_tuneado, std::ref(i), std::ref(sum), std::ref(count), nro_tabla, std::ref(cantThreads)
+        );
+    }
+
+    for (unsigned i = 0; i < cantThreads; i++)
+    {
+        threads[i].join();   
+    }
+
+    if (count > 0){ // cuidado : posible condicion de carrera
+        // no entiendo porque el string "" pero es parte del ejercicio
+        return std::make_pair("", sum / count);
+    }
+}
 
 #endif
