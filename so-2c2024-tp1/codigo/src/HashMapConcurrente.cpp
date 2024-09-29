@@ -10,6 +10,7 @@
 #include <mutex>
 #include <vector>
 #include <thread>
+#include <functional>  // Para std::bind
 
 HashMapConcurrente::HashMapConcurrente() {
     for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
@@ -119,7 +120,7 @@ float HashMapConcurrente::promedio() {
 }
 
 
-void HashMapConcurrente::promedio_tuneado(int& nro_thread, float& sum, unsigned int& count, unsigned int nro_tabla, unsigned int& cantThreads){
+void HashMapConcurrente::promedio_tuneado(unsigned int& nro_thread, float& sum, unsigned int& count, unsigned int& nro_tabla, unsigned int& cantThreads){
     while (nro_tabla < cantLetras){
         if (tabla[nro_tabla] == nullptr || tabla[nro_tabla]->longitud() == 0) // si es null o si tiene 0 elementos vamos a mirar la siguiente tabla
         {
@@ -156,19 +157,21 @@ std::pair<std::string, unsigned int> HashMapConcurrente::promedioParalelo(unsign
             Esto permite que std::thread sepa que estás pasando referencias a las variables. 
             Sin std::ref, el hilo intentaría copiar las variables, lo que llevaría a errores de tipo porque no coinciden con la firma de promedio_tuneado
             */
-            promedio_tuneado, std::ref(i), std::ref(sum), std::ref(count), nro_tabla, std::ref(cantThreads)
+            std::bind(&HashMapConcurrente::promedio_tuneado, this, std::ref(i), std::ref(sum), std::ref(count), std::ref(nro_tabla), std::ref(cantThreads))
         );
     }
 
-    for (unsigned i = 0; i < cantThreads; i++)
+    for (auto& t : threads)
     {
-        threads[i].join();   
+        t.join();   
     }
 
     if (count > 0){ // cuidado : posible condicion de carrera
         // no entiendo porque el string "" pero es parte del ejercicio
         return std::make_pair("", sum / count);
     }
+
+    return std::make_pair("", 0);  // Agregar caso para evitar retorno de valor no válido
 }
 
 #endif
