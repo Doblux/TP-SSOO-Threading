@@ -158,8 +158,7 @@ void HashMapConcurrente::promedio_tuneado(unsigned int &nro_thread, float &sum,
   }
 }
 
-std::pair<std::string, unsigned int>
-HashMapConcurrente::promedioParalelo(unsigned int cantThreads) {
+float HashMapConcurrente::promedioParalelo(unsigned int cantThreads) {
   float sum = 0.0;
   unsigned int count = 0;
   unsigned int nro_tabla = 0;
@@ -182,12 +181,10 @@ HashMapConcurrente::promedioParalelo(unsigned int cantThreads) {
   }
 
   if (count > 0) { // cuidado : posible condicion de carrera
-    // no entiendo porque el string "" pero es parte del ejercicio
-    return std::make_pair("", sum / count);
+    return sum / count;
   }
 
-  return std::make_pair(
-      "", 0); // Agregar caso para evitar retorno de valor no válido
+  return 0.0; // Agregar caso para evitar retorno de valor no válido
 }
 
 #endif
