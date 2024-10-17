@@ -51,14 +51,12 @@ class ListaAtomica {
     
     void insertar(const T &valor) {
         // Completar (Ejercicio 1)
-        Nodo* nuevo = new Nodo(valor);
-        Nodo* cabeza_actual = _cabeza.load();
-        nuevo->_siguiente = _cabeza; // para asegurar que no sea nullptr cuando el while de false
+        Nodo* nuevo_nodo = new Nodo(valor);
 
-        while (!_cabeza.compare_exchange_weak(cabeza_actual, nuevo)) // "mientras todos los threads no tengan bien actualizada la _cabeza"
-        {
-            nuevo->_siguiente = cabeza_actual; // asegura apuntar a la cabeza mas reciente
-        } // si _cabeza != cabeza_actual, actualiza la cabeza a su valor real, devuelve false y negado da true
+        std::lock_guard<std::mutex> lock(_mutex)       // Solo dejo pasar un thread a la vez (dejo pasar cuando termina la ejecucion el anterior)
+
+        nuevo_nodo->_siguiente = _cabeza;   // Actualizo los valores
+        _cabeza = nuevo_nodo
     }
 
     T& operator[](size_t i) const {
