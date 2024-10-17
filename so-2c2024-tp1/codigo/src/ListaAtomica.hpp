@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <cstddef>
+#include <mutex>
 
 template<typename T>
 class ListaAtomica {
@@ -53,10 +54,10 @@ class ListaAtomica {
         // Completar (Ejercicio 1)
         Nodo* nuevo_nodo = new Nodo(valor);
 
-        std::lock_guard<std::mutex> lock(_mutex)       // Solo dejo pasar un thread a la vez (dejo pasar cuando termina la ejecucion el anterior)
+        std::lock_guard<std::mutex> lock(std::mutex mtx);       // Solo dejo pasar un thread a la vez (dejo pasar cuando termina la ejecucion el anterior)
 
         nuevo_nodo->_siguiente = _cabeza;   // Actualizo los valores
-        _cabeza = nuevo_nodo
+        _cabeza = nuevo_nodo;
     }
 
     T& operator[](size_t i) const {
