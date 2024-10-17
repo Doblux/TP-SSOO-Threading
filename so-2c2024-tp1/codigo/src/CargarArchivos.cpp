@@ -40,12 +40,11 @@ void cargarMultiplesArchivos( HashMapConcurrente &hashMap, unsigned int cantThre
     // Completar (Ejercicio 4)
     std::vector<std::thread> threads;
 
-    if (cantThreads > filePaths.size()){ // 1 thread por cada archivo y listo
+    if (cantThreads >= filePaths.size()){ // 1 thread por cada archivo y listo
         for (size_t i = 0; i < filePaths.size(); i++)
         {
             threads.emplace_back(
-                cargarArchivo, std::ref(hashMap), filePaths[i]
-            );
+                cargarArchivo, std::ref(hashMap), filePaths[i]);
         }
         
     } else {
@@ -54,16 +53,15 @@ void cargarMultiplesArchivos( HashMapConcurrente &hashMap, unsigned int cantThre
             for (size_t j = 0; j < cantThreads && i < filePaths.size(); j++) // podamos por cantidad de archivos
             {
                 threads.emplace_back(
-                    std::ref(cargarArchivo), std::ref(hashMap), filePaths[j]
-                );
+                    cargarArchivo, std::ref(hashMap), filePaths[i]);
                 i++;
             }
             
             for (auto& k : threads){
-                if (i < filePaths.size()){
-                    k.join(); // seria como wait hasta q los threads terminen
-                }
+                k.join(); // seria como wait hasta q los threads terminen
             }
+
+            threads.clear();
         }
     }
 
