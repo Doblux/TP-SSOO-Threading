@@ -61,7 +61,7 @@ void cargarMultiplesArchivos( HashMapConcurrente &hashMap, unsigned int cantThre
                 k.join(); // seria como wait hasta q los threads terminen
             }
 
-            threads.clear();
+            threads.clear();        //evitar un crecimiento descontrolado de la lista de threads y manejar adecuadamente los grupos de threads que se lanzan por lotes
         }
     }
 
