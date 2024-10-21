@@ -4,6 +4,8 @@
 #include "../src/CargarArchivos.hpp"
 #include "../src/HashMapConcurrente.hpp"
 #include "../src/ListaAtomica.hpp"
+#include <thread>
+#include <string>
 
 // Tests Ejercicio 1
 

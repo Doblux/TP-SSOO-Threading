@@ -5,10 +5,12 @@
 #include <cstddef>
 #include <mutex>
 
-template<typename T>
-class ListaAtomica {
- private:
-    struct Nodo {
+template <typename T>
+class ListaAtomica
+{
+private:
+    struct Nodo
+    {
         Nodo(const T &val) : _valor(val), _siguiente(nullptr) {}
 
         T _valor;
@@ -16,50 +18,58 @@ class ListaAtomica {
     };
 
     std::atomic<Nodo *> _cabeza;
+    std::mutex mtx;
 
- public:
+public:
     ListaAtomica() : _cabeza(nullptr) {}
 
-    ~ListaAtomica() {
+    ~ListaAtomica()
+    {
         Nodo *n, *t;
         n = _cabeza.load();
-        while (n) {
+        while (n)
+        {
             t = n;
             n = n->_siguiente;
             delete t;
         }
     }
-    
-    
-    void insertar(const T &valor) {
+
+    void insertar(const T &valor)
+    {
         // Completar (Ejercicio 1)
-        Nodo* nuevo_nodo = new Nodo(valor);
+        Nodo *nuevo_nodo = new Nodo(valor);
 
-        std::lock_guard<std::mutex> lock(std::mutex mtx);       // Solo dejo pasar un thread a la vez (dejo pasar cuando termina la ejecucion el anterior)
+        std::lock_guard<std::mutex> lock(mtx);
 
-        nuevo_nodo->_siguiente = _cabeza;   // Actualizo los valores
+        nuevo_nodo->_siguiente = _cabeza; // Actualizo los valores
         _cabeza = nuevo_nodo;
     }
 
-    T& operator[](size_t i) const {
+    T &operator[](size_t i) const
+    {
         Nodo *n = _cabeza.load();
-        for (size_t j = 0; j < i; j++) {
+        for (size_t j = 0; j < i; j++)
+        {
             n = n->_siguiente;
         }
         return n->_valor;
     }
 
-    unsigned int longitud() const {
+    unsigned int longitud() const
+    {
         Nodo *n = _cabeza.load();
         unsigned int cant = 0;
-        while (n != nullptr) {
+        while (n != nullptr)
+        {
             cant++;
             n = n->_siguiente;
         }
         return cant;
     }
 
-    struct iterator {
+    struct iterator
+    {
     private:
         ListaAtomica *_lista;
 
@@ -69,33 +79,38 @@ class ListaAtomica {
             : _lista(lista), _nodo_sig(sig) {}
 
     public:
-        iterator &operator=(const typename ListaAtomica::iterator &otro) {
+        iterator &operator=(const typename ListaAtomica::iterator &otro)
+        {
             _lista = otro._lista;
             _nodo_sig = otro._nodo_sig;
             return *this;
         }
 
-        T& operator*() {
+        T &operator*()
+        {
             return _nodo_sig->_valor;
         }
 
-        iterator& operator++() { 
+        iterator &operator++()
+        {
             _nodo_sig = _nodo_sig->_siguiente;
             return *this;
         }
 
-        iterator operator++(int) { 
+        iterator operator++(int)
+        {
             iterator tmp = *this;
             ++(*this);
             return tmp;
         }
 
-        bool operator==(const typename ListaAtomica::iterator &otro) const {
-            return _lista->_cabeza.load() == otro._lista->_cabeza.load()
-                && _nodo_sig == otro._nodo_sig;
+        bool operator==(const typename ListaAtomica::iterator &otro) const
+        {
+            return _lista->_cabeza.load() == otro._lista->_cabeza.load() && _nodo_sig == otro._nodo_sig;
         }
 
-        bool operator!=(const typename ListaAtomica::iterator &otro) const {
+        bool operator!=(const typename ListaAtomica::iterator &otro) const
+        {
             return !(*this == otro);
         }
 
@@ -103,11 +118,13 @@ class ListaAtomica {
         friend iterator ListaAtomica<T>::end();
     };
 
-    iterator begin() { 
+    iterator begin()
+    {
         return iterator(this, _cabeza);
     }
 
-    iterator end() { 
+    iterator end()
+    {
         return iterator(this, nullptr);
     }
 };
