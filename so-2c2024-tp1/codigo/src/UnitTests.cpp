@@ -153,6 +153,23 @@ LT_CHECK_EQ(actual, 3);
 LT_END_TEST(PromedioEsCorrecto)
 
 // Completar TEST para caso concurrente
+LT_BEGIN_TEST(TestsEjercicio3, PromedioConcurrenteEsCorrecto) 
+hM.incrementar("Heladera");
+hM.incrementar("Heladera");
+hM.incrementar("Heladera");
+hM.incrementar("Heladera");
+hM.incrementar("Microondas");
+hM.incrementar("Microondas");
+
+//calculamos el promedio en paralelo
+float promedio_concurrente = hM.promedioParalelo(2);  // Usamos 4 threads
+
+//verificar que el promedio es el correcto
+LT_CHECK_EQ(promedio_concurrente, 3); // (3+2+1)/3 = 2
+LT_END_TEST(PromedioConcurrenteEsCorrecto)
+
+
+// Tests Ejercicio 4
 
 LT_BEGIN_SUITE(TestsEjercicio4)
 
