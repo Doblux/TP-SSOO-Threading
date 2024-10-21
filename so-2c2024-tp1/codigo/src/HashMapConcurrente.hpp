@@ -32,8 +32,8 @@ private:
 
   std::mutex mutex_tabla[HashMapConcurrente::cantLetras];
 
-  void promedio_tuneado(unsigned int &nro_thread, float &sum,
-                        unsigned int &count, unsigned int &nro_tabla,
+  void promedio_tuneado(unsigned int nro_thread, float &sum,
+                        unsigned int &count, unsigned int nro_tabla,
                         unsigned int &cantThreads);
 };
 

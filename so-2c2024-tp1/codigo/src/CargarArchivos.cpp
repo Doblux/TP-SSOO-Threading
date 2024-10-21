@@ -46,6 +46,9 @@ void cargarMultiplesArchivos( HashMapConcurrente &hashMap, unsigned int cantThre
             threads.emplace_back(
                 cargarArchivo, std::ref(hashMap), filePaths[i]);
         }
+        for (auto& k : threads){
+                k.join(); // seria como wait hasta q los threads terminen
+            }
         
     } else {
         size_t i = 0;

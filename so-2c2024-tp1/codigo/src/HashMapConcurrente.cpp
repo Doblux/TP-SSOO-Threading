@@ -123,9 +123,9 @@ float HashMapConcurrente::promedio() {
   return 0;
 }
 
-void HashMapConcurrente::promedio_tuneado(unsigned int &nro_thread, float &sum,
+void HashMapConcurrente::promedio_tuneado(unsigned int nro_thread, float &sum,
                                           unsigned int &count,
-                                          unsigned int &nro_tabla,
+                                          unsigned int nro_tabla,
                                           unsigned int &cantThreads) {
   while (nro_tabla < cantLetras) {
     if (tabla[nro_tabla] == nullptr ||
@@ -171,8 +171,8 @@ float HashMapConcurrente::promedioParalelo(unsigned int cantThreads) {
         llevaría a errores de tipo porque no coinciden con la firma de
         promedio_tuneado
         */
-        std::bind(&HashMapConcurrente::promedio_tuneado, this, std::ref(i),
-                  std::ref(sum), std::ref(count), std::ref(nro_tabla),
+        std::bind(&HashMapConcurrente::promedio_tuneado, this, i,
+                  std::ref(sum), std::ref(count), nro_tabla,
                   std::ref(cantThreads)));
   }
 
