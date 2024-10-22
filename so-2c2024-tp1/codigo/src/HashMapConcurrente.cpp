@@ -128,8 +128,7 @@ void HashMapConcurrente::promedio_tuneado(unsigned int nro_thread, float &sum,
                                           unsigned int nro_tabla,
                                           unsigned int &cantThreads) {
   while (nro_tabla < cantLetras) {
-    if (tabla[nro_tabla] == nullptr ||
-        tabla[nro_tabla]->longitud() == 0) // si es null o si tiene 0 elementos
+    if (tabla[nro_tabla] == nullptr || tabla[nro_tabla]->longitud() == 0) // si es null o si tiene 0 elementos
                                            // vamos a mirar la siguiente tabla
     {
       nro_tabla++;
@@ -140,17 +139,14 @@ void HashMapConcurrente::promedio_tuneado(unsigned int nro_thread, float &sum,
       // cuando se deja de utilizar el bucket correspondiente
 
       unsigned int lista_size = tabla[nro_tabla]->longitud();
-      if (nro_thread <
-          lista_size) // si esta en rango hacemos el promedio, sino ajustamos
+      if (nro_thread < lista_size) // si esta en rango hacemos el promedio, sino ajustamos
                       // los indices en el siguiente bucket
       {
         sum += (*tabla[nro_tabla])[nro_thread].second;
         count++;
         nro_thread += cantThreads;
       } else { // si me pasé de indice
-        nro_thread =
-            nro_thread - lista_size +
-            1;       // calculo cuanto me pase de largo (el +1 por la longitud
+        nro_thread = nro_thread - lista_size;       // calculo cuanto me pase de largo (el +1 por la longitud
                      // (lista_size), cualquier cosa probar sin el +1)
         nro_tabla++; // me cambio de lista o "bucket"
       }

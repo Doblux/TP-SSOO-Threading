@@ -157,7 +157,7 @@ LT_BEGIN_TEST(TestsEjercicio3, PromedioConcurrenteEsCorrecto)
 hM.incrementar("Heladera");
 hM.incrementar("Heladera");
 hM.incrementar("Heladera");
-hM.incrementar("Heladera");
+hM.incrementar("Televisor");
 hM.incrementar("Microondas");
 hM.incrementar("Microondas");
 
@@ -165,7 +165,7 @@ hM.incrementar("Microondas");
 float promedio_concurrente = hM.promedioParalelo(2);  // Usamos 4 threads
 
 //verificar que el promedio es el correcto
-LT_CHECK_EQ(promedio_concurrente, 3); // (3+2+1)/3 = 2
+LT_CHECK_EQ(promedio_concurrente, 2); // (3+2+1)/3 = 2
 LT_END_TEST(PromedioConcurrenteEsCorrecto)
 
 
