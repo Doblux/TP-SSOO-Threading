@@ -18,7 +18,6 @@ private:
     };
 
     std::atomic<Nodo *> _cabeza;
-    std::mutex mtx;
 
 public:
     ListaAtomica() : _cabeza(nullptr) {}
@@ -35,15 +34,27 @@ public:
         }
     }
 
+/*
+ *
+a.compare_exchange_strong(b, c) compara a con b
+si a == b (comparacion)  --> a = c (asignacion) y devuelve true
+si a != b (comparacion)  --> actualiza a con el valor actual de a y devuelve false
+
+a.compare_exchange_weak(b, c) compara a con b
+si a == b (comparacion)  -->  a = c (asignacion) y devuelve true
+si a != b (comparacion)  -->  actualiza a con el valor actual de a, y devuelve false
+ * */
+
     void insertar(const T &valor)
     {
-        // Completar (Ejercicio 1)
-        Nodo *nuevo_nodo = new Nodo(valor);
+        Nodo* nuevo = new Nodo(valor);
+        Nodo* cabeza_actual = _cabeza.load();
+        nuevo->_siguiente = _cabeza;
 
-        std::lock_guard<std::mutex> lock(mtx);
-
-        nuevo_nodo->_siguiente = _cabeza; // Actualizo los valores
-        _cabeza = nuevo_nodo;
+        while (!_cabeza.compare_exchange_weak(cabeza_actual, nuevo))
+        {
+            nuevo->_siguiente = cabeza_actual;
+        }
     }
 
     T &operator[](size_t i) const
