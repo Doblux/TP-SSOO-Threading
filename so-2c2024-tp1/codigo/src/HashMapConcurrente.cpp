@@ -107,15 +107,15 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
 }
 
 float HashMapConcurrente::promedio() {
-
   float sum = 0.0;
   unsigned int count = 0;
-  for (unsigned int index = 0; index < HashMapConcurrente::cantLetras;
-       index++) {
+  for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {
+    mutex_tabla[index].lock();
     for (const auto &p : *tabla[index]) {
       sum += p.second;
       count++;
     }
+    mutex_tabla[index].unlock();
   }
   if (count > 0) {
     return sum / count;
